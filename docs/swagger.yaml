@@ -1,0 +1,348 @@
+definitions:
+  models.Profile:
+    properties:
+      age:
+        type: integer
+      city:
+        type: string
+      country:
+        type: string
+      foot:
+        type: string
+      games_played:
+        type: integer
+      height:
+        type: integer
+      id:
+        type: integer
+      playing_frequency:
+        type: integer
+      pref_position:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  models.ProfileCreateRequest:
+    properties:
+      age:
+        type: integer
+      city:
+        type: string
+      country:
+        type: string
+      foot:
+        type: string
+      height:
+        type: integer
+      pref_position:
+        type: string
+    type: object
+  models.Team:
+    properties:
+      discription:
+        type: string
+      id:
+        type: integer
+      photo:
+        type: string
+      playing_in:
+        format: date-time
+        type: string
+      stadium:
+        type: string
+      team_name:
+        type: string
+    type: object
+  models.TeamCreateRequest:
+    properties:
+      discription:
+        type: string
+      photo:
+        type: string
+      playing_in:
+        format: date-time
+        type: string
+      stadium:
+        type: string
+      team_name:
+        type: string
+    type: object
+  models.User:
+    properties:
+      allows_write_to_pm:
+        type: boolean
+      id:
+        type: integer
+      photo_url:
+        type: string
+      profile:
+        $ref: '#/definitions/models.Profile'
+      profile_id:
+        type: integer
+      registered_at:
+        type: string
+      team:
+        $ref: '#/definitions/models.Team'
+      team_id:
+        type: integer
+      tg_first_name:
+        type: string
+      tg_last_login:
+        type: string
+      tg_last_name:
+        type: string
+      tg_username:
+        type: string
+      ui_language_code:
+        type: string
+    type: object
+  models.UserCreateRequest:
+    properties:
+      allows_write_to_pm:
+        type: boolean
+      photo_url:
+        type: string
+      profile_create_request:
+        $ref: '#/definitions/models.ProfileCreateRequest'
+      tg_first_name:
+        type: string
+      tg_last_name:
+        type: string
+      tg_username:
+        type: string
+      ui_language_code:
+        type: string
+    required:
+    - tg_first_name
+    - tg_last_name
+    - tg_username
+    - ui_language_code
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API for my Go project
+  title: My API
+  version: "1.0"
+paths:
+  /profiles:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает массив профилей
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Profile'
+            type: array
+      summary: Получить список профилей
+      tags:
+      - Профили
+    post:
+      consumes:
+      - application/json
+      description: Добавляет новый профиль в систему
+      parameters:
+      - description: Данные профиля
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.ProfileCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Profile'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Создать профиль
+      tags:
+      - Профили
+  /teams:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает массив команд
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Team'
+            type: array
+      summary: Получить список команд
+      tags:
+      - Команды
+    post:
+      consumes:
+      - application/json
+      description: Добавляет новую команду в систему
+      parameters:
+      - description: Данные команды
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.TeamCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Team'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Создать команду
+      tags:
+      - Команды
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает массив пользователей
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+      summary: Получить список пользователей
+      tags:
+      - Пользователи
+    post:
+      consumes:
+      - application/json
+      description: Создает нового пользователя и профиль для него в одном запросе
+      parameters:
+      - description: Данные пользователя
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Пользователь успешно создан
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверные данные запроса
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Не удалось создать пользователя
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Создать пользователя с профилем
+      tags:
+      - Пользователи
+  /users/{user_id}/team:
+    delete:
+      consumes:
+      - application/json
+      description: Убирает пользователя из команды, устанавливая team_id в NULL
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Пользователь покинул команду
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Недопустимые параметры запроса
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Не удалось покинуть команду
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Выход пользователя из команды
+      tags:
+      - Пользователь и команды
+  /users/{user_id}/team/{team_id}:
+    post:
+      consumes:
+      - application/json
+      description: Добавляет пользователя в команду по ID команды и ID пользователя
+      parameters:
+      - description: ID команды
+        in: path
+        name: team_id
+        required: true
+        type: integer
+      - description: ID пользователя
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Пользователь присоединен к команде
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Недопустимые параметры запроса
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Не удалось присоединиться к команде
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Присоединение пользователя к команде
+      tags:
+      - Пользователь и команды
+swagger: "2.0"
