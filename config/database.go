@@ -11,7 +11,8 @@ var DB *pgxpool.Pool
 
 func ConnectDB() {
 	var err error
-	dsn := "postgres://postgres:sekretik123@localhost:5432/funbikSecond?sslmode=disable"
+	dsn := "postgres://postgres:sekretik123@localhost:5432/futbikSecond?sslmode=disable"
+	log.Println("Подключение к базе данных:", dsn)
 
 	DB, err = pgxpool.New(context.Background(), dsn)
 	if err != nil {
