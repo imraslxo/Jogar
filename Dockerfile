@@ -1,18 +1,24 @@
-FROM golang:1.24
-
-RUN apt-get update && apt-get install -y postgresql-client
+FROM golang:1.24 AS builder
 
 WORKDIR /app
+
 COPY go.mod go.sum ./
 RUN go mod download
+
 COPY . .
-RUN go build -o main ./main.go
 
-ENV PORT=8080
-ENV DB_HOST=db
-ENV DB_PORT=5432
-ENV DB_USER=postgres
-ENV DB_PASSWORD=sekretik123
-ENV DB_NAME=futbikSecond
+RUN go build -o futbic ./main.go
 
-CMD ["./main"]
+FROM debian:bullseye-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y ca-certificates
+
+COPY --from=builder /app/futbic .
+
+COPY --from=builder /app/migrations ./migrations
+
+EXPOSE 8080
+
+CMD ["./futbic"]

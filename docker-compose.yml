@@ -1,31 +1,28 @@
-version: '3.8'
+version: "3.9"
 
 services:
   db:
     image: postgres:15
-    restart: always
+    container_name: futbic_db
     environment:
+      POSTGRES_DB: futbicSecond
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: sekretik123
-      POSTGRES_DB: futbikSecond
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-  api:
+    ports:
+      - "5432:5432"
+
+  app:
     build: .
-    restart: always
+    container_name: futbic_api
     ports:
       - "8080:8080"
     depends_on:
       - db
     environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_USER: postgres
-      DB_PASSWORD: sekretik123
-      DB_NAME: futbikSecond
-    command: [ "/app/main" ]  # Запуск API
+      DB_URL: postgres://postgres:sekretik123@localhost:5432/futbikSecond?sslmode=disable
+    restart: on-failure
 
 volumes:
   pgdata:
