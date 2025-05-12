@@ -1,4 +1,23 @@
 definitions:
+  models.AuthRequestDTO:
+    properties:
+      allows_write_to_pm:
+        type: boolean
+      auth_date:
+        type: integer
+      first_name:
+        type: string
+      is_premium:
+        type: boolean
+      language_code:
+        type: string
+      last_name:
+        type: string
+      photo_url:
+        type: string
+      username:
+        type: string
+    type: object
   models.Profile:
     properties:
       age:
@@ -72,7 +91,7 @@ definitions:
       allows_write_to_pm:
         type: boolean
       auth_date:
-        type: string
+        type: integer
       first_name:
         type: string
       id:
@@ -136,12 +155,12 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/models.User'
+          $ref: '#/definitions/models.AuthRequestDTO'
       produces:
       - application/json
       responses:
         "201":
-          description: Пользователь успешно авторизирован
+          description: Пользователь успешно авторизован
           schema:
             additionalProperties: true
             type: object
@@ -152,7 +171,7 @@ paths:
               type: string
             type: object
         "500":
-          description: Не удалось авторизировать пользователя
+          description: Не удалось авторизовать пользователя
           schema:
             additionalProperties:
               type: string

@@ -15,14 +15,14 @@ import (
 //	@Tags			Авторизация
 //	@Accept			json
 //	@Produce		json
-//	@Param			input	body		models.User	true	"Данные пользователя"
-//	@Success		201		{object}	map[string]interface{}	"Пользователь успешно авторизирован"
+//	@Param			input	body		models.AuthRequestDTO	true	"Данные пользователя"
+//	@Success		201		{object}	map[string]interface{}	"Пользователь успешно авторизован"
 //	@Failure		400		{object}	map[string]string	"Неверные данные запроса"
-//	@Failure		500		{object}	map[string]string	"Не удалось авторизировать пользователя"
+//	@Failure		500		{object}	map[string]string	"Не удалось авторизовать пользователя"
 //	@Router			/auth [post]
 //	@Security		BearerAuth
 func AuthHandler(c *gin.Context) {
-	var input models.User
+	var input models.AuthRequestDTO
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка при парсинге: " + err.Error()})
 		return
@@ -41,7 +41,7 @@ func AuthHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при создании транзакции: " + err.Error()})
 	}
 
-	query := "INSERT INTO user (tg_username, tg_first_name, tg_last_name, photo_url, is_premium, ui_language_code, allows_write_to_pm, auth_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id"
+	query := "INSERT INTO \"user\" (tg_username, tg_first_name, tg_last_name, photo_url, is_premium, ui_language_code, allows_write_to_pm, auth_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id"
 	log.Println("Выполняется запрос: ", query)
 
 	var userID uint64

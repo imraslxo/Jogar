@@ -40,13 +40,13 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/models.AuthRequestDTO"
                         }
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "Пользователь успешно авторизирован",
+                        "description": "Пользователь успешно авторизован",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -62,7 +62,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "Не удалось авторизировать пользователя",
+                        "description": "Не удалось авторизовать пользователя",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -414,6 +414,35 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.AuthRequestDTO": {
+            "type": "object",
+            "properties": {
+                "allows_write_to_pm": {
+                    "type": "boolean"
+                },
+                "auth_date": {
+                    "type": "integer"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "is_premium": {
+                    "type": "boolean"
+                },
+                "language_code": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "photo_url": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Profile": {
             "type": "object",
             "properties": {
@@ -524,7 +553,7 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "auth_date": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "first_name": {
                     "type": "string"
