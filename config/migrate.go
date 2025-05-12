@@ -3,11 +3,10 @@ package config
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/jackc/pgx/v4/stdlib"
+	"github.com/pressly/goose/v3"
 	"log"
 	"os"
-
-	_ "github.com/jackc/pgx/v4/stdlib" // нужен для совместимости goose с pgx
-	"github.com/pressly/goose/v3"
 )
 
 func RunMigrations() {
@@ -22,8 +21,8 @@ func RunMigrations() {
 		log.Fatalf("Ошибка установки диалекта goose: %v", err)
 	}
 
-	fmt.Println("🚀 Запуск миграций...")
-	if err := goose.Up(db, "migrations"); err != nil {
+	fmt.Println("Запуск миграций...")
+	if err := goose.Up(db, "db/migrations"); err != nil {
 		log.Fatalf("Ошибка при выполнении миграций: %v", err)
 	}
 	fmt.Println("Миграции применены успешно")
