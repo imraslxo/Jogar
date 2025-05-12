@@ -20,7 +20,7 @@ import (
 // @Success 200 {array} models.Team
 // @Router /teams [get]
 func GetTeams(c *gin.Context) {
-	rows, err := config.DB.Query(context.Background(), "SELECT t.id, t.team_name, t.photo, t.playing_in, t.stadium, t.discription FROM teams t")
+	rows, err := config.DB.Query(context.Background(), "SELECT t.id, t.team_name, t.photo, t.playing_in, t.stadium, t.description FROM teams t")
 	if err != nil {
 		log.Println("Ошибка при выполнении запроса: ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -31,7 +31,7 @@ func GetTeams(c *gin.Context) {
 	var teams []models.Team
 	for rows.Next() {
 		var team models.Team
-		err = rows.Scan(&team.ID, &team.TeamName, &team.Photo, &team.PlayingIn, &team.Stadium, &team.Discription)
+		err = rows.Scan(&team.ID, &team.TeamName, &team.Photo, &team.PlayingIn, &team.Stadium, &team.Description)
 		if err != nil {
 			log.Println("Ошибка при сканировании: ", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -73,11 +73,11 @@ func PostTeam(c *gin.Context) {
 	}
 	defer conn.Release()
 
-	query := "INSERT INTO teams(team_name, photo, playing_in, stadium, discription) VALUES ($1, $2, $3, $4, $5) RETURNING id"
+	query := "INSERT INTO teams(team_name, photo, playing_in, stadium, description) VALUES ($1, $2, $3, $4, $5) RETURNING id"
 	log.Println("Выполняется запрос: ", query)
 
 	var teamID uint64
-	err = conn.QueryRow(c.Request.Context(), query, input.TeamName, input.Photo, input.PlayingIn, input.Stadium, input.Discription).Scan(&teamID)
+	err = conn.QueryRow(c.Request.Context(), query, input.TeamName, input.Photo, input.PlayingIn, input.Stadium, input.Description).Scan(&teamID)
 	if err != nil {
 		log.Println("Ошибка при выполнении запроса: ", err)
 		if pgErr, ok := err.(*pgconn.PgError); ok && pgErr.Code == "23505" {

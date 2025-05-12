@@ -37,13 +37,13 @@ func GetUsers(c *gin.Context) {
 		var profileID *uint64 // NULL-safe
 
 		err := rows.Scan(&user.ID, &user.TgUsername, &user.TgFirstName, &user.TgLastName,
-			&user.PhotoURL, &user.TgLastLogin, &user.RegisteredAt,
+			&user.PhotoURL, &user.IsPremium, &user.AuthDate,
 			&user.UILanguageCode, &user.AllowsWriteToPM,
 			&profileID, &profile.PrefPosition, &profile.Height,
 			&profile.Foot, &profile.Age, &profile.PlayingFrequency,
 			&profile.GamesPlayed, &profile.City, &profile.Country,
 			&team.ID, &team.TeamName, &team.Photo, &team.PlayingIn,
-			&team.Stadium, &team.Discription)
+			&team.Stadium, &team.Description)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return

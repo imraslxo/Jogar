@@ -15,6 +15,64 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Авторизирует пользователя",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Авторизация"
+                ],
+                "summary": "Авторизация пользователя",
+                "parameters": [
+                    {
+                        "description": "Данные пользователя",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Пользователь успешно авторизирован",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Неверные данные запроса",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Не удалось авторизировать пользователя",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/profiles": {
             "get": {
                 "description": "Возвращает массив профилей",
@@ -417,7 +475,7 @@ const docTemplate = `{
         "models.Team": {
             "type": "object",
             "properties": {
-                "discription": {
+                "description": {
                     "type": "string"
                 },
                 "id": {
@@ -441,7 +499,7 @@ const docTemplate = `{
         "models.TeamCreateRequest": {
             "type": "object",
             "properties": {
-                "discription": {
+                "description": {
                     "type": "string"
                 },
                 "photo": {
@@ -465,8 +523,23 @@ const docTemplate = `{
                 "allows_write_to_pm": {
                     "type": "boolean"
                 },
+                "auth_date": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
+                },
+                "is_premium": {
+                    "type": "boolean"
+                },
+                "language_code": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
                 },
                 "photo_url": {
                     "type": "string"
@@ -477,28 +550,13 @@ const docTemplate = `{
                 "profile_id": {
                     "type": "integer"
                 },
-                "registered_at": {
-                    "type": "string"
-                },
                 "team": {
                     "$ref": "#/definitions/models.Team"
                 },
                 "team_id": {
                     "type": "integer"
                 },
-                "tg_first_name": {
-                    "type": "string"
-                },
-                "tg_last_login": {
-                    "type": "string"
-                },
-                "tg_last_name": {
-                    "type": "string"
-                },
-                "tg_username": {
-                    "type": "string"
-                },
-                "ui_language_code": {
+                "username": {
                     "type": "string"
                 }
             }
@@ -506,14 +564,23 @@ const docTemplate = `{
         "models.UserCreateRequest": {
             "type": "object",
             "required": [
-                "tg_first_name",
-                "tg_last_name",
-                "tg_username",
-                "ui_language_code"
+                "first_name",
+                "language_code",
+                "last_name",
+                "username"
             ],
             "properties": {
                 "allows_write_to_pm": {
                     "type": "boolean"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "language_code": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
                 },
                 "photo_url": {
                     "type": "string"
@@ -521,16 +588,7 @@ const docTemplate = `{
                 "profile_create_request": {
                     "$ref": "#/definitions/models.ProfileCreateRequest"
                 },
-                "tg_first_name": {
-                    "type": "string"
-                },
-                "tg_last_name": {
-                    "type": "string"
-                },
-                "tg_username": {
-                    "type": "string"
-                },
-                "ui_language_code": {
+                "username": {
                     "type": "string"
                 }
             }

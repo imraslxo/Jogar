@@ -39,7 +39,7 @@ definitions:
     type: object
   models.Team:
     properties:
-      discription:
+      description:
         type: string
       id:
         type: integer
@@ -55,7 +55,7 @@ definitions:
     type: object
   models.TeamCreateRequest:
     properties:
-      discription:
+      description:
         type: string
       photo:
         type: string
@@ -71,52 +71,52 @@ definitions:
     properties:
       allows_write_to_pm:
         type: boolean
+      auth_date:
+        type: string
+      first_name:
+        type: string
       id:
         type: integer
+      is_premium:
+        type: boolean
+      language_code:
+        type: string
+      last_name:
+        type: string
       photo_url:
         type: string
       profile:
         $ref: '#/definitions/models.Profile'
       profile_id:
         type: integer
-      registered_at:
-        type: string
       team:
         $ref: '#/definitions/models.Team'
       team_id:
         type: integer
-      tg_first_name:
-        type: string
-      tg_last_login:
-        type: string
-      tg_last_name:
-        type: string
-      tg_username:
-        type: string
-      ui_language_code:
+      username:
         type: string
     type: object
   models.UserCreateRequest:
     properties:
       allows_write_to_pm:
         type: boolean
+      first_name:
+        type: string
+      language_code:
+        type: string
+      last_name:
+        type: string
       photo_url:
         type: string
       profile_create_request:
         $ref: '#/definitions/models.ProfileCreateRequest'
-      tg_first_name:
-        type: string
-      tg_last_name:
-        type: string
-      tg_username:
-        type: string
-      ui_language_code:
+      username:
         type: string
     required:
-    - tg_first_name
-    - tg_last_name
-    - tg_username
-    - ui_language_code
+    - first_name
+    - language_code
+    - last_name
+    - username
     type: object
 host: localhost:8080
 info:
@@ -125,6 +125,43 @@ info:
   title: My API
   version: "1.0"
 paths:
+  /auth:
+    post:
+      consumes:
+      - application/json
+      description: Авторизирует пользователя
+      parameters:
+      - description: Данные пользователя
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Пользователь успешно авторизирован
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверные данные запроса
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Не удалось авторизировать пользователя
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Авторизация пользователя
+      tags:
+      - Авторизация
   /profiles:
     get:
       consumes:

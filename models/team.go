@@ -8,7 +8,7 @@ type Team struct {
 	Photo       string    `json:"photo,omitempty"`
 	PlayingIn   time.Time `json:"playing_in" swaggertype:"string" format:"date-time"`
 	Stadium     string    `json:"stadium"`
-	Discription string    `json:"discription,omitempty"`
+	Description string    `json:"description,omitempty"`
 }
 
 type TeamCreateRequest struct {
@@ -16,5 +16,5 @@ type TeamCreateRequest struct {
 	Photo       string    `json:"photo,omitempty"`
 	PlayingIn   time.Time `json:"playing_in" swaggertype:"string" format:"date-time"`
 	Stadium     string    `json:"stadium"`
-	Discription string    `json:"discription,omitempty"`
+	Description string    `json:"description,omitempty"`
 }

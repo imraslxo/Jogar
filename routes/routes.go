@@ -13,6 +13,8 @@ func Routes() *gin.Engine {
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	r.POST("/auth", api.AuthHandler)
+
 	r.GET("/users", api.GetUsers)
 	r.POST("/users", api.CreateUser)
 	r.POST("/users/:user_id/team/:team_id", api.JoinTeam)
