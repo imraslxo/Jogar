@@ -18,3 +18,8 @@ type TeamCreateRequest struct {
 	Stadium     string    `json:"stadium"`
 	Description string    `json:"description,omitempty"`
 }
+
+type TeamWithCount struct {
+	Name          string `json:"name"`
+	Players_count int    `json:"players_count"`
+}

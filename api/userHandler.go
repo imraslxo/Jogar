@@ -164,7 +164,7 @@ func JoinTeam(c *gin.Context) {
 	userID := c.Param("user_id")
 	teamID := c.Param("team_id")
 
-	query := "UPDATE users SET team_id = $1 WHERE id = $2"
+	query := "UPDATE \"user\" SET team_id = $1 WHERE id = $2"
 
 	_, err := config.DB.Exec(context.Background(), query, teamID, userID)
 	if err != nil {
@@ -189,7 +189,7 @@ func JoinTeam(c *gin.Context) {
 func LeaveTeam(c *gin.Context) {
 	userID := c.Param("user_id")
 
-	query := "UPDATE users SET team_id = NULL WHERE id = $1"
+	query := "UPDATE \"user\" SET team_id = NULL WHERE id = $1"
 
 	_, err := config.DB.Exec(context.Background(), query, userID)
 	if err != nil {
@@ -198,4 +198,84 @@ func LeaveTeam(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Пользователь вышел из команды"})
+}
+
+// GetUsersByTeamID godoc
+// @Summary Получение пользователей по ID команды
+// @Description Возвращает список пользователей, принадлежащих к команде с указанным ID
+// @Tags Пользователь и команды
+// @Param team_id path string true "ID команды"
+// @Produce json
+// @Success 200 {array} models.AuthRequestDTO
+// @Failure 500 {object} map[string]string "Ошибка при выполнении запроса или сканировании"
+// @Router /users/team/{team_id} [get]
+func GetUsersByTeamID(c *gin.Context) {
+	teamID := c.Param("team_id")
+
+	query := "SELECT tg_username, tg_first_name, tg_last_name, photo_url, is_premium, ui_language_code, allows_write_to_pm, auth_date FROM \"user\" JOIN teams ON \"user\".team_id = teams.id WHERE teams.id = $1"
+	log.Println("Выполняется запрос... ", query)
+
+	rows, err := config.DB.Query(context.Background(), query, teamID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при выводе пользователей: " + err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	var users []models.AuthRequestDTO
+	for rows.Next() {
+		var user models.AuthRequestDTO
+		err := rows.Scan(
+			&user.TgUsername,
+			&user.TgFirstName,
+			&user.TgLastName,
+			&user.PhotoURL,
+			&user.IsPremium,
+			&user.UILanguageCode,
+			&user.AllowsWriteToPM,
+			&user.AuthDate)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при сканировании: " + err.Error()})
+			return
+		}
+
+		users = append(users, user)
+	}
+
+	c.IndentedJSON(http.StatusOK, users)
+}
+
+// GetNumberOfPlayersInTeam godoc
+// @Summary Получить количество игроков в команде
+// @Description Возвращает количество игроков в команде по имени. Если команд с таким именем несколько, вернёт массив.
+// @Tags Пользователь и команды
+// @Param team_name path string true "Название команды"
+// @Produce json
+// @Success 200 {array} models.TeamWithCount
+// @Failure 500 {object} map[string]string "Внутренняя ошибка сервера"
+// @Router /teams/players/count/{team_name} [get]
+func GetNumberOfPlayersInTeam(c *gin.Context) {
+	teamName := c.Param("team_name")
+
+	query := "SELECT teams.team_name, COUNT(\"user\".team_id) FROM teams LEFT JOIN \"user\" ON \"user\".team_id = teams.id WHERE teams.team_name = $1 GROUP BY teams.team_name"
+	log.Println("Выполняется запрос... ", query)
+
+	rows, err := config.DB.Query(context.Background(), query, teamName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка в запросе: " + err.Error()})
+		return
+	}
+
+	var teams []models.TeamWithCount
+	for rows.Next() {
+		var team models.TeamWithCount
+		err := rows.Scan(&team.Name, &team.Players_count)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при сканировании: " + err.Error()})
+			return
+		}
+		teams = append(teams, team)
+	}
+
+	c.IndentedJSON(http.StatusOK, teams)
 }

@@ -217,6 +217,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/teams/players/count/{team_name}": {
+            "get": {
+                "description": "Возвращает количество игроков в команде по имени. Если команд с таким именем несколько, вернёт массив.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Пользователь и команды"
+                ],
+                "summary": "Получить количество игроков в команде",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Название команды",
+                        "name": "team_name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.TeamWithCount"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
                 "description": "Возвращает массив пользователей",
@@ -289,6 +330,47 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Не удалось создать пользователя",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/team/{team_id}": {
+            "get": {
+                "description": "Возвращает список пользователей, принадлежащих к команде с указанным ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Пользователь и команды"
+                ],
+                "summary": "Получение пользователей по ID команды",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID команды",
+                        "name": "team_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.AuthRequestDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка при выполнении запроса или сканировании",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -543,6 +625,17 @@ const docTemplate = `{
                 },
                 "team_name": {
                     "type": "string"
+                }
+            }
+        },
+        "models.TeamWithCount": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "players_count": {
+                    "type": "integer"
                 }
             }
         },

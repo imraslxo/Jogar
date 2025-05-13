@@ -86,6 +86,13 @@ definitions:
       team_name:
         type: string
     type: object
+  models.TeamWithCount:
+    properties:
+      name:
+        type: string
+      players_count:
+        type: integer
+    type: object
   models.User:
     properties:
       allows_write_to_pm:
@@ -273,6 +280,34 @@ paths:
       summary: Создать команду
       tags:
       - Команды
+  /teams/players/count/{team_name}:
+    get:
+      description: Возвращает количество игроков в команде по имени. Если команд с
+        таким именем несколько, вернёт массив.
+      parameters:
+      - description: Название команды
+        in: path
+        name: team_name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.TeamWithCount'
+            type: array
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить количество игроков в команде
+      tags:
+      - Пользователь и команды
   /users:
     get:
       consumes:
@@ -399,6 +434,34 @@ paths:
               type: string
             type: object
       summary: Присоединение пользователя к команде
+      tags:
+      - Пользователь и команды
+  /users/team/{team_id}:
+    get:
+      description: Возвращает список пользователей, принадлежащих к команде с указанным
+        ID
+      parameters:
+      - description: ID команды
+        in: path
+        name: team_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.AuthRequestDTO'
+            type: array
+        "500":
+          description: Ошибка при выполнении запроса или сканировании
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получение пользователей по ID команды
       tags:
       - Пользователь и команды
 swagger: "2.0"
