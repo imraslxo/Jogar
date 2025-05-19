@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"futbikSecond/config"
 	"futbikSecond/models"
 	"github.com/gin-gonic/gin"
@@ -75,4 +76,35 @@ func AuthHandler(c *gin.Context) {
 		"id":      userID,
 		"message": "Пользователь успешно авторизован",
 	})
+}
+
+// GetAuthUser godoc
+//
+// @Summary Получить список пользователей
+// @Description Возвращает всех пользователей из таблицы "user".
+// @Tags Авторизация
+// @Produce json
+// @Success 200 {array} models.User
+// @Failure 500 {object} map[string]string
+// @Router /auth/users [get]
+func GetAuthUser(c *gin.Context) {
+	rows, err := config.DB.Query(context.Background(), "SELECT id, tg_username, tg_first_name, tg_last_name, photo_url, is_premium, ui_language_code, allows_write_to_pm, auth_date FROM \"user\"")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка в запросе: " + err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	var users []models.User
+	for rows.Next() {
+		var user models.User
+		err = rows.Scan(&user.ID, &user.TgUsername, &user.TgFirstName, &user.TgLastName, &user.PhotoURL, &user.IsPremium, &user.UILanguageCode, &user.AllowsWriteToPM, &user.AuthDate)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при сканировании: " + err.Error()})
+			return
+		}
+		users = append(users, user)
+	}
+
+	c.IndentedJSON(http.StatusOK, users)
 }

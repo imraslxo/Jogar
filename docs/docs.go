@@ -73,6 +73,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/users": {
+            "get": {
+                "description": "Возвращает всех пользователей из таблицы \"user\".",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Авторизация"
+                ],
+                "summary": "Получить список пользователей",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.User"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/profiles": {
             "get": {
                 "description": "Возвращает массив профилей",

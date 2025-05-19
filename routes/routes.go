@@ -14,6 +14,7 @@ func Routes() *gin.Engine {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.POST("/auth", api.AuthHandler)
+	r.GET("/auth/users", api.GetAuthUser)
 
 	r.GET("/users/team/:team_id", api.GetUsersByTeamID)
 	r.GET("/teams/players/count/:team_name", api.GetNumberOfPlayersInTeam)

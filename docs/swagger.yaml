@@ -188,6 +188,27 @@ paths:
       summary: Авторизация пользователя
       tags:
       - Авторизация
+  /auth/users:
+    get:
+      description: Возвращает всех пользователей из таблицы "user".
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить список пользователей
+      tags:
+      - Авторизация
   /profiles:
     get:
       consumes:
