@@ -16,8 +16,8 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/auth": {
-            "get": {
-                "description": "Принимает строку initData из query и создает пользователя в базе",
+            "post": {
+                "description": "Принимает строку initData в теле запроса и создает или обновляет пользователя в базе",
                 "consumes": [
                     "application/json"
                 ],
@@ -30,66 +30,12 @@ const docTemplate = `{
                 "summary": "Авторизация по initData",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Строка initData от Telegram",
-                        "name": "initData",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Пользователь успешно авторизован",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "400": {
-                        "description": "Некорректный initData",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Внутренняя ошибка сервера",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Авторизирует пользователя",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Авторизация"
-                ],
-                "summary": "Авторизация пользователя",
-                "parameters": [
-                    {
-                        "description": "Данные пользователя",
+                        "description": "Строка initData",
                         "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.AuthRequestDTO"
+                            "$ref": "#/definitions/models.InitDataRequest"
                         }
                     }
                 ],
@@ -602,6 +548,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.InitDataRequest": {
+            "type": "object",
+            "required": [
+                "initData"
+            ],
+            "properties": {
+                "initData": {
                     "type": "string"
                 }
             }
