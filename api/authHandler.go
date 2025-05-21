@@ -5,9 +5,84 @@ import (
 	"futbikSecond/config"
 	"futbikSecond/models"
 	"github.com/gin-gonic/gin"
+	initdata "github.com/telegram-mini-apps/init-data-golang"
 	"log"
 	"net/http"
 )
+
+// NewAuthHandler godoc
+//
+// @Summary Авторизация по initData
+// @Description Принимает строку initData из query и создает пользователя в базе
+// @Tags Авторизация
+// @Accept json
+// @Produce json
+// @Param request body models.InitDataRequest true "Строка initData"
+// @Success 201 {object} AuthSuccessResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /auth [post]
+func NewAuthHandler(c *gin.Context) {
+	var req models.InitDataRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверный формат запроса"})
+		return
+	}
+	input, err := initdata.Parse(req.InitData)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка при парсинге: " + err.Error()})
+		return
+	}
+
+	conn, err := config.DB.Acquire(c.Request.Context())
+	if err != nil {
+		log.Println("Ошибка подключения к базе данных: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+		return
+	}
+	defer conn.Release()
+
+	tx, err := conn.Begin(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при создании транзакции: " + err.Error()})
+	}
+
+	query := "INSERT INTO \"user\" (tg_username, tg_first_name, tg_last_name, photo_url, is_premium, ui_language_code, allows_write_to_pm, auth_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id"
+	log.Println("Выполняется запрос: ", query)
+
+	var userID uint64
+	err = tx.QueryRow(
+		c.Request.Context(),
+		query,
+		input.User.Username,
+		input.User.FirstName,
+		input.User.LastName,
+		input.User.PhotoURL,
+		input.User.IsPremium,
+		input.User.LanguageCode,
+		input.User.AllowsWriteToPm,
+		input.AuthDateRaw,
+	).Scan(&userID)
+
+	if err != nil {
+		tx.Rollback(c.Request.Context())
+		log.Println("Ошибка при создании пользователя: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Не удалось создать пользователя"})
+		return
+	}
+
+	if err := tx.Commit(c.Request.Context()); err != nil {
+		log.Println("Ошибка при коммите транзакции: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Transaction commit error"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"id":      userID,
+		"message": "Пользователь успешно авторизован",
+	})
+}
 
 // AuthHandler godoc
 //

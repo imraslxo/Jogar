@@ -20,4 +20,5 @@ type ProfileCreateRequest struct {
 	Age          uint64 `json:"age"`
 	City         string `json:"city"`
 	Country      string `json:"country"`
+	UserID       uint64 `json:"user_id"`
 }

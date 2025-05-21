@@ -16,6 +16,55 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/auth": {
+            "get": {
+                "description": "Принимает строку initData из query и создает пользователя в базе",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Авторизация"
+                ],
+                "summary": "Авторизация по initData",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Строка initData от Telegram",
+                        "name": "initData",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Пользователь успешно авторизован",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Некорректный initData",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -612,6 +661,9 @@ const docTemplate = `{
                 },
                 "pref_position": {
                     "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },

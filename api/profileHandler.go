@@ -71,7 +71,7 @@ func PostProfile(c *gin.Context) {
 	}
 	defer conn.Release()
 
-	query := "INSERT INTO profiles(pref_position, height, foot, age, city, country) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id"
+	query := "INSERT INTO profiles(pref_position, height, foot, age, city, country, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id"
 	log.Println("Выполняется запрос: ", query)
 
 	var profileID uint64

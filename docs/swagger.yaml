@@ -55,6 +55,8 @@ definitions:
         type: integer
       pref_position:
         type: string
+      user_id:
+        type: integer
     type: object
   models.Team:
     properties:
@@ -152,6 +154,39 @@ info:
   version: "1.0"
 paths:
   /auth:
+    get:
+      consumes:
+      - application/json
+      description: Принимает строку initData из query и создает пользователя в базе
+      parameters:
+      - description: Строка initData от Telegram
+        in: query
+        name: initData
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Пользователь успешно авторизован
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Некорректный initData
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Авторизация по initData
+      tags:
+      - Авторизация
     post:
       consumes:
       - application/json

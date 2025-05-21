@@ -18,6 +18,10 @@ type User struct {
 	Team   *Team   `json:"team,omitempty"`
 }
 
+type InitDataRequest struct {
+	InitData string `json:"initData" binding:"required"`
+}
+
 type AuthRequestDTO struct {
 	TgUsername      string `json:"username"`
 	TgFirstName     string `json:"first_name"`
