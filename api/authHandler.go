@@ -23,25 +23,20 @@ import (
 // @Router /auth [post]
 func NewAuthHandler(c *gin.Context) {
 	var req models.InitDataRequest
-	log.Printf("Получен запрос: %s %s", c.Request.Method, c.Request.URL.String())
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		log.Printf("Ошибка привязки JSON: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверный формат запроса"})
 		return
 	}
-	log.Printf("Получено initData: %s", req.InitData)
-
 	input, err := initdata.Parse(req.InitData)
 	if err != nil {
-		log.Printf("Ошибка при парсинге initData: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка при парсинге: " + err.Error()})
 		return
 	}
 
 	conn, err := config.DB.Acquire(c.Request.Context())
 	if err != nil {
-		log.Printf("Ошибка подключения к базе данных: %v", err)
+		log.Println("Ошибка подключения к базе данных: ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
 		return
 	}
@@ -49,25 +44,11 @@ func NewAuthHandler(c *gin.Context) {
 
 	tx, err := conn.Begin(c.Request.Context())
 	if err != nil {
-		log.Printf("Ошибка при создании транзакции: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при создании транзакции"})
-		return
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при создании транзакции: " + err.Error()})
 	}
-	defer tx.Rollback(c.Request.Context()) // Откат, если транзакция не закоммичена
 
-	query := `
-        INSERT INTO "user" (tg_username, tg_first_name, tg_last_name, photo_url, is_premium, ui_language_code, allows_write_to_pm, auth_date)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        ON CONFLICT (tg_username) DO UPDATE
-        SET tg_first_name = EXCLUDED.tg_first_name,
-            tg_last_name = EXCLUDED.tg_last_name,
-            photo_url = EXCLUDED.photo_url,
-            is_premium = EXCLUDED.is_premium,
-            ui_language_code = EXCLUDED.ui_language_code,
-            allows_write_to_pm = EXCLUDED.allows_write_to_pm,
-            auth_date = EXCLUDED.auth_date
-        RETURNING id`
-	log.Printf("Выполняется запрос: %s", query)
+	query := "INSERT INTO \"user\" (tg_username, tg_first_name, tg_last_name, photo_url, is_premium, ui_language_code, allows_write_to_pm, auth_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id"
+	log.Println("Выполняется запрос: ", query)
 
 	var userID uint64
 	err = tx.QueryRow(
@@ -84,13 +65,14 @@ func NewAuthHandler(c *gin.Context) {
 	).Scan(&userID)
 
 	if err != nil {
-		log.Printf("Ошибка при создании/обновлении пользователя: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Не удалось создать или обновить пользователя"})
+		tx.Rollback(c.Request.Context())
+		log.Println("Ошибка при создании пользователя: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Не удалось создать пользователя"})
 		return
 	}
 
 	if err := tx.Commit(c.Request.Context()); err != nil {
-		log.Printf("Ошибка при коммите транзакции: %v", err)
+		log.Println("Ошибка при коммите транзакции: ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Transaction commit error"})
 		return
 	}
