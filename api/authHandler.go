@@ -21,7 +21,7 @@ import (
 // @Failure 400 {object} map[string]string "Неверные данные запроса"
 // @Failure 500 {object} map[string]string "Не удалось авторизовать пользователя"
 // @Router /auth [post]
-func NewAuthHandler(c *gin.Context) {
+func AuthHandler(c *gin.Context) {
 	var req models.InitDataRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -47,7 +47,7 @@ func NewAuthHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при создании транзакции: " + err.Error()})
 	}
 
-	query := "INSERT INTO \"user\" (tg_username,tg_userid, tg_first_name, tg_last_name, photo_url, is_premium, ui_language_code, allows_write_to_pm, auth_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9) RETURNING id"
+	query := "INSERT INTO \"user\" (tg_username, tg_userid, tg_first_name, tg_last_name, photo_url, is_premium, ui_language_code, allows_write_to_pm, auth_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9) RETURNING id"
 	log.Println("Выполняется запрос: ", query)
 
 	var userID uint64
