@@ -17,7 +17,7 @@ const docTemplate = `{
     "paths": {
         "/auth": {
             "post": {
-                "description": "Принимает строку initData в теле запроса и создает или обновляет пользователя в базе",
+                "description": "Принимает строку initData и создает нового пользователя, если он еще не зарегистрирован",
                 "consumes": [
                     "application/json"
                 ],
@@ -30,7 +30,7 @@ const docTemplate = `{
                 "summary": "Авторизация по initData",
                 "parameters": [
                     {
-                        "description": "Строка initData",
+                        "description": "InitData от Telegram",
                         "name": "input",
                         "in": "body",
                         "required": true,
@@ -40,29 +40,32 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
+                    "200": {
+                        "description": "Пользователь уже зарегистрирован",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
                     "201": {
-                        "description": "Пользователь успешно авторизован",
+                        "description": "Пользователь успешно авторизован (создан)",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "400": {
-                        "description": "Неверные данные запроса",
+                        "description": "Неверные данные запроса или ошибка парсинга",
                         "schema": {
                             "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "additionalProperties": true
                         }
                     },
                     "500": {
-                        "description": "Не удалось авторизовать пользователя",
+                        "description": "Внутренняя ошибка сервера (БД, транзакция и т.п.)",
                         "schema": {
                             "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -717,6 +720,9 @@ const docTemplate = `{
                     "$ref": "#/definitions/models.Team"
                 },
                 "team_id": {
+                    "type": "integer"
+                },
+                "tg_userid": {
                     "type": "integer"
                 },
                 "username": {

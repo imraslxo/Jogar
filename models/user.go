@@ -3,6 +3,7 @@ package models
 type User struct {
 	ID              uint64 `json:"id"`
 	TgUsername      string `json:"username"`
+	TgUserID        int64  `json:"tg_userid,omitempty"`
 	TgFirstName     string `json:"first_name"`
 	TgLastName      string `json:"last_name"`
 	PhotoURL        string `json:"photo_url,omitempty"`
