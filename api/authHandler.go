@@ -72,8 +72,7 @@ func AuthHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Пользователь новый",
-		"exist":   exist,
+		"exist": exist,
 	})
 
 	query := "INSERT INTO \"user\" (tg_username, tg_userid, tg_first_name, tg_last_name, photo_url, is_premium, ui_language_code, allows_write_to_pm, auth_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9) RETURNING id"
@@ -100,11 +99,6 @@ func AuthHandler(c *gin.Context) {
 		return
 	}
 	commited = true
-
-	c.JSON(http.StatusCreated, gin.H{
-		"id":      userID,
-		"message": "Пользователь успешно авторизован",
-	})
 }
 
 // GetAuthUser godoc
