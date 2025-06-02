@@ -1,5 +1,5 @@
 ip-185-177-73-236-122783.vps.hosted-by-mvps.net {
-  reverse_proxy app:8080
+  reverse_proxy futbic_api:8080
 
   encode gzip
 
