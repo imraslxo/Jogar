@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5/pgconn"
 )
 
 // GetProfile godoc
@@ -43,22 +42,21 @@ func GetProfiles(c *gin.Context) {
 	c.JSON(http.StatusOK, profiles)
 }
 
-// CreateProfile godoc
+// PostProfileFirstPg godoc
 //
-//	@Summary		Создать профиль
-//	@Description	Добавляет новый профиль в систему
-//	@Tags			Профили
-//	@Accept			json
-//	@Produce		json
-//	@Param			input	body		models.ProfileCreateRequest	true	"Данные профиля"
-//	@Success		201		{object}	models.Profile
-//
-// @Failure      404  {object}  map[string]string
-//
-//	@Router			/profiles [post]
-//	@Security		BearerAuth
-func PostProfile(c *gin.Context) {
-	var input models.ProfileCreateRequest
+// @Summary      Создание профиля и привязка к пользователю
+// @Description  Добавляет запись в таблицу profiles и обновляет поле profile_id у пользователя
+// @Tags         Профили
+// @Accept       json
+// @Produce      json
+// @Param        user_id   path      int                          true  "ID пользователя"
+// @Param        input     body      models.ProfileCreateFirstDTO true  "Данные профиля"
+// @Success      200       {object}  map[string]interface{}        "Профиль успешно создан и привязан"
+// @Failure      400       {object}  map[string]string             "Неверный ввод"
+// @Failure      500       {object}  map[string]string             "Ошибка сервера"
+// @Router       /users/{user_id}/profile [post]
+func PostProfileFirstPg(c *gin.Context) {
+	var input models.ProfileCreateFirstDTO
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -71,23 +69,38 @@ func PostProfile(c *gin.Context) {
 	}
 	defer conn.Release()
 
-	query := "INSERT INTO profiles(pref_position, height, foot, age, city, country, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id"
+	tx, err := conn.Begin(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при создании транзакции: " + err.Error()})
+	}
+
+	commited := false
+	defer func() {
+		if !commited {
+			tx.Rollback(c.Request.Context())
+		}
+	}()
+
+	query := "INSERT INTO profiles (app_language, country, city) VALUES ($1, $2, $3) RETURNING id"
 	log.Println("Выполняется запрос: ", query)
 
-	var profileID uint64
-	err = conn.QueryRow(c.Request.Context(), query, input.PrefPosition, input.Height, input.Foot, input.Age, input.City, input.Country).Scan(&profileID)
+	var profileID int64
+	err = tx.QueryRow(c.Request.Context(), query, input.AppLanguage, input.Country, input.City).Scan(&profileID)
 	if err != nil {
-		log.Println("Ошибка при выполнении запроса: ", err)
-		if pgErr, ok := err.(*pgconn.PgError); ok && pgErr.Code == "23505" {
-			c.JSON(http.StatusConflict, gin.H{"error": "Username already exists"})
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user: " + err.Error()})
-		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при выполнении запроса: " + err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"id":      profileID,
-		"message": "Профиль успешно добавлен",
-	})
+	userID := c.Param("user_id")
+	secondQuery := "UPDATE \"user\" SET profile_id = $1 WHERE id = $2"
+	log.Println("Выполняется запрос: ", query)
+
+	_, err = tx.Exec(c.Request.Context(), secondQuery, profileID, userID)
+
+	if err := tx.Commit(c.Request.Context()); err != nil {
+		log.Println("Ошибка при коммите транзакции: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Transaction commit error"})
+		return
+	}
+	commited = true
 }

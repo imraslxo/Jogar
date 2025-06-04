@@ -35,7 +35,7 @@ func Routes() *gin.Engine {
 	r.DELETE("/users/:user_id/team", api.LeaveTeam)
 
 	r.GET("/profiles", api.GetProfiles)
-	r.POST("/profiles", api.PostProfile)
+	r.POST("/users/:user_id/profile", api.PostProfileFirstPg)
 
 	r.GET("/teams", api.GetTeams)
 	r.POST("/teams", api.PostTeam)

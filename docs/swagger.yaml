@@ -29,6 +29,8 @@ definitions:
     properties:
       age:
         type: integer
+      app_language:
+        type: string
       city:
         type: string
       country:
@@ -47,6 +49,15 @@ definitions:
         type: string
       user_id:
         type: integer
+    type: object
+  models.ProfileCreateFirstDTO:
+    properties:
+      app_language:
+        type: string
+      city:
+        type: string
+      country:
+        type: string
     type: object
   models.ProfileCreateRequest:
     properties:
@@ -239,35 +250,6 @@ paths:
       summary: Получить список профилей
       tags:
       - Профили
-    post:
-      consumes:
-      - application/json
-      description: Добавляет новый профиль в систему
-      parameters:
-      - description: Данные профиля
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/models.ProfileCreateRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.Profile'
-        "404":
-          description: Not Found
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      security:
-      - BearerAuth: []
-      summary: Создать профиль
-      tags:
-      - Профили
   /teams:
     get:
       consumes:
@@ -395,6 +377,47 @@ paths:
       summary: Создать пользователя с профилем
       tags:
       - Пользователи
+  /users/{user_id}/profile:
+    post:
+      consumes:
+      - application/json
+      description: Добавляет запись в таблицу profiles и обновляет поле profile_id
+        у пользователя
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: Данные профиля
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.ProfileCreateFirstDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Профиль успешно создан и привязан
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный ввод
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создание профиля и привязка к пользователю
+      tags:
+      - Профили
   /users/{user_id}/team:
     delete:
       consumes:
