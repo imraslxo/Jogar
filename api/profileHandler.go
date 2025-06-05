@@ -81,17 +81,17 @@ func PostProfileFirstPg(c *gin.Context) {
 		}
 	}()
 
-	query := "INSERT INTO profiles (app_language, country, city) VALUES ($1, $2, $3) RETURNING id"
+	userID := c.Param("user_id")
+	query := "INSERT INTO profiles (app_language, country, city, user_id) VALUES ($1, $2, $3, $4) RETURNING id"
 	log.Println("Выполняется запрос: ", query)
 
 	var profileID int64
-	err = tx.QueryRow(c.Request.Context(), query, input.AppLanguage, input.Country, input.City).Scan(&profileID)
+	err = tx.QueryRow(c.Request.Context(), query, input.AppLanguage, input.Country, input.City, userID).Scan(&profileID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при выполнении запроса: " + err.Error()})
 		return
 	}
 
-	userID := c.Param("user_id")
 	secondQuery := "UPDATE \"user\" SET profile_id = $1 WHERE id = $2"
 	log.Println("Выполняется запрос: ", query)
 
