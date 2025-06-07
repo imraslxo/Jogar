@@ -49,7 +49,7 @@ func GetProfiles(c *gin.Context) {
 // @Tags         Профили
 // @Accept       json
 // @Produce      json
-// @Param        user_id   path      int                          true  "ID пользователя"
+// @Param        tg_userid   path      int                          true  "Telegram ID пользователя"
 // @Param        input     body      models.ProfileCreateFirstDTO true  "Данные профиля"
 // @Success      200       {object}  map[string]interface{}        "Профиль успешно создан и привязан"
 // @Failure      400       {object}  map[string]string             "Неверный ввод"
@@ -81,12 +81,12 @@ func PostProfileFirstPg(c *gin.Context) {
 		}
 	}()
 
-	userID := c.Param("user_id")
-	query := "INSERT INTO profiles (app_language, country, city, user_id) VALUES ($1, $2, $3, $4) RETURNING id"
+	tguserID := c.Param("tg_userid")
+	query := "INSERT INTO profiles (app_language, country, city, tg_userid) VALUES ($1, $2, $3, $4) RETURNING id"
 	log.Println("Выполняется запрос: ", query)
 
 	var profileID int64
-	err = tx.QueryRow(c.Request.Context(), query, input.AppLanguage, input.Country, input.City, userID).Scan(&profileID)
+	err = tx.QueryRow(c.Request.Context(), query, input.AppLanguage, input.Country, input.City, tguserID).Scan(&profileID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при выполнении запроса: " + err.Error()})
 		return
@@ -95,7 +95,7 @@ func PostProfileFirstPg(c *gin.Context) {
 	secondQuery := "UPDATE \"user\" SET profile_id = $1 WHERE id = $2"
 	log.Println("Выполняется запрос: ", query)
 
-	_, err = tx.Exec(c.Request.Context(), secondQuery, profileID, userID)
+	_, err = tx.Exec(c.Request.Context(), secondQuery, profileID, tguserID)
 
 	if err := tx.Commit(c.Request.Context()); err != nil {
 		log.Println("Ошибка при коммите транзакции: ", err)
