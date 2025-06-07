@@ -377,47 +377,6 @@ paths:
       summary: Создать пользователя с профилем
       tags:
       - Пользователи
-  /users/{user_id}/profile:
-    post:
-      consumes:
-      - application/json
-      description: Добавляет запись в таблицу profiles и обновляет поле profile_id
-        у пользователя
-      parameters:
-      - description: ID пользователя
-        in: path
-        name: user_id
-        required: true
-        type: integer
-      - description: Данные профиля
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/models.ProfileCreateFirstDTO'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Профиль успешно создан и привязан
-          schema:
-            additionalProperties: true
-            type: object
-        "400":
-          description: Неверный ввод
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Ошибка сервера
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Создание профиля и привязка к пользователю
-      tags:
-      - Профили
   /users/{user_id}/team:
     delete:
       consumes:
@@ -493,6 +452,47 @@ paths:
       summary: Присоединение пользователя к команде
       tags:
       - Пользователь и команды
+  /users/by-tg/{tg_userid}/profile:
+    post:
+      consumes:
+      - application/json
+      description: Добавляет запись в таблицу profiles и обновляет поле profile_id
+        у пользователя
+      parameters:
+      - description: Telegram ID пользователя
+        in: path
+        name: tg_userid
+        required: true
+        type: integer
+      - description: Данные профиля
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.ProfileCreateFirstDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Профиль успешно создан и привязан
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный ввод
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создание профиля и привязка к пользователю
+      tags:
+      - Профили
   /users/team/{team_id}:
     get:
       description: Возвращает список пользователей, принадлежащих к команде с указанным

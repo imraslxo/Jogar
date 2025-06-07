@@ -54,7 +54,7 @@ func GetProfiles(c *gin.Context) {
 // @Success      200       {object}  map[string]interface{}        "Профиль успешно создан и привязан"
 // @Failure      400       {object}  map[string]string             "Неверный ввод"
 // @Failure      500       {object}  map[string]string             "Ошибка сервера"
-// @Router       /users/{user_id}/profile [post]
+// @Router       /users/by-tg/{tg_userid}/profile [post]
 func PostProfileFirstPg(c *gin.Context) {
 	var input models.ProfileCreateFirstDTO
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -82,7 +82,7 @@ func PostProfileFirstPg(c *gin.Context) {
 	}()
 
 	tguserID := c.Param("tg_userid")
-	query := "INSERT INTO profiles (app_language, country, city, tg_userid) VALUES ($1, $2, $3, $4) RETURNING id"
+	query := "INSERT INTO profiles (app_language, country, city, tg_user_id) VALUES ($1, $2, $3, $4) RETURNING id"
 	log.Println("Выполняется запрос: ", query)
 
 	var profileID int64

@@ -324,48 +324,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/team/{team_id}": {
-            "get": {
-                "description": "Возвращает список пользователей, принадлежащих к команде с указанным ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Пользователь и команды"
-                ],
-                "summary": "Получение пользователей по ID команды",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID команды",
-                        "name": "team_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.AuthRequestDTO"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка при выполнении запроса или сканировании",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/users/{user_id}/profile": {
+        "/users/by-tg/{tg_userid}/profile": {
             "post": {
                 "description": "Добавляет запись в таблицу profiles и обновляет поле profile_id у пользователя",
                 "consumes": [
@@ -381,8 +340,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID пользователя",
-                        "name": "user_id",
+                        "description": "Telegram ID пользователя",
+                        "name": "tg_userid",
                         "in": "path",
                         "required": true
                     },
@@ -415,6 +374,47 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Ошибка сервера",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/team/{team_id}": {
+            "get": {
+                "description": "Возвращает список пользователей, принадлежащих к команде с указанным ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Пользователь и команды"
+                ],
+                "summary": "Получение пользователей по ID команды",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID команды",
+                        "name": "team_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.AuthRequestDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка при выполнении запроса или сканировании",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
