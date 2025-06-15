@@ -76,6 +76,17 @@ definitions:
       user_id:
         type: integer
     type: object
+  models.ProfileCreateSecondDTO:
+    properties:
+      age:
+        type: integer
+      foot:
+        type: string
+      height:
+        type: integer
+      pref_position:
+        type: string
+    type: object
   models.Team:
     properties:
       description:
@@ -248,6 +259,88 @@ paths:
               $ref: '#/definitions/models.Profile'
             type: array
       summary: Получить список профилей
+      tags:
+      - Профили
+  /profiles/by-tg/{tg_userid}/profile:
+    post:
+      consumes:
+      - application/json
+      description: Добавляет запись в таблицу profiles и обновляет поле profile_id
+        у пользователя
+      parameters:
+      - description: Telegram ID пользователя
+        in: path
+        name: tg_userid
+        required: true
+        type: integer
+      - description: Данные профиля
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.ProfileCreateFirstDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Профиль успешно создан и привязан
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный ввод
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создание профиля и привязка к пользователю
+      tags:
+      - Профили
+  /profiles/second/{tg_userid}/profile:
+    post:
+      consumes:
+      - application/json
+      description: Обновляет поля age, pref_position, foot и height в таблице profiles
+        по tg_user_id
+      parameters:
+      - description: Telegram user ID
+        in: path
+        name: tg_userid
+        required: true
+        type: string
+      - description: Данные профиля
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.ProfileCreateSecondDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Профиль успешно обновлён
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный формат входных данных
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Ошибка на сервере
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновление второй части профиля пользователя
       tags:
       - Профили
   /teams:
@@ -452,47 +545,6 @@ paths:
       summary: Присоединение пользователя к команде
       tags:
       - Пользователь и команды
-  /users/by-tg/{tg_userid}/profile:
-    post:
-      consumes:
-      - application/json
-      description: Добавляет запись в таблицу profiles и обновляет поле profile_id
-        у пользователя
-      parameters:
-      - description: Telegram ID пользователя
-        in: path
-        name: tg_userid
-        required: true
-        type: integer
-      - description: Данные профиля
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/models.ProfileCreateFirstDTO'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Профиль успешно создан и привязан
-          schema:
-            additionalProperties: true
-            type: object
-        "400":
-          description: Неверный ввод
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Ошибка сервера
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Создание профиля и привязка к пользователю
-      tags:
-      - Профили
   /users/team/{team_id}:
     get:
       description: Возвращает список пользователей, принадлежащих к команде с указанным

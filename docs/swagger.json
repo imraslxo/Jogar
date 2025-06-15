@@ -122,6 +122,126 @@
                 }
             }
         },
+        "/profiles/by-tg/{tg_userid}/profile": {
+            "post": {
+                "description": "Добавляет запись в таблицу profiles и обновляет поле profile_id у пользователя",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Профили"
+                ],
+                "summary": "Создание профиля и привязка к пользователю",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Telegram ID пользователя",
+                        "name": "tg_userid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Данные профиля",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ProfileCreateFirstDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Профиль успешно создан и привязан",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный ввод",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка сервера",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/profiles/second/{tg_userid}/profile": {
+            "post": {
+                "description": "Обновляет поля age, pref_position, foot и height в таблице profiles по tg_user_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Профили"
+                ],
+                "summary": "Обновление второй части профиля пользователя",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Telegram user ID",
+                        "name": "tg_userid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Данные профиля",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ProfileCreateSecondDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Профиль успешно обновлён",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный формат входных данных",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка на сервере",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/teams": {
             "get": {
                 "description": "Возвращает массив команд",
@@ -307,66 +427,6 @@
                     },
                     "500": {
                         "description": "Не удалось создать пользователя",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/users/by-tg/{tg_userid}/profile": {
-            "post": {
-                "description": "Добавляет запись в таблицу profiles и обновляет поле profile_id у пользователя",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Профили"
-                ],
-                "summary": "Создание профиля и привязка к пользователю",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Telegram ID пользователя",
-                        "name": "tg_userid",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Данные профиля",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.ProfileCreateFirstDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Профиль успешно создан и привязан",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "400": {
-                        "description": "Неверный ввод",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка сервера",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -648,6 +708,23 @@
                 },
                 "user_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.ProfileCreateSecondDTO": {
+            "type": "object",
+            "properties": {
+                "age": {
+                    "type": "integer"
+                },
+                "foot": {
+                    "type": "string"
+                },
+                "height": {
+                    "type": "integer"
+                },
+                "pref_position": {
+                    "type": "string"
                 }
             }
         },
