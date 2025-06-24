@@ -28,7 +28,7 @@ definitions:
   models.Profile:
     properties:
       age:
-        type: integer
+        type: string
       app_language:
         type: string
       city:
@@ -44,7 +44,7 @@ definitions:
       id:
         type: integer
       playing_frequency:
-        type: integer
+        type: string
       pref_position:
         type: string
       user_id:
@@ -52,17 +52,23 @@ definitions:
     type: object
   models.ProfileCreateFirstDTO:
     properties:
+      age:
+        type: string
       app_language:
         type: string
       city:
         type: string
       country:
         type: string
+      playing_frequency:
+        type: string
+      pref_position:
+        type: string
     type: object
   models.ProfileCreateRequest:
     properties:
       age:
-        type: integer
+        type: string
       city:
         type: string
       country:
@@ -75,17 +81,6 @@ definitions:
         type: string
       user_id:
         type: integer
-    type: object
-  models.ProfileCreateSecondDTO:
-    properties:
-      age:
-        type: integer
-      foot:
-        type: string
-      height:
-        type: integer
-      pref_position:
-        type: string
     type: object
   models.Team:
     properties:
@@ -300,47 +295,6 @@ paths:
               type: string
             type: object
       summary: Создание профиля и привязка к пользователю
-      tags:
-      - Профили
-  /profiles/second/{tg_userid}/profile:
-    post:
-      consumes:
-      - application/json
-      description: Обновляет поля age, pref_position, foot и height в таблице profiles
-        по tg_user_id
-      parameters:
-      - description: Telegram user ID
-        in: path
-        name: tg_userid
-        required: true
-        type: string
-      - description: Данные профиля
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/models.ProfileCreateSecondDTO'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Профиль успешно обновлён
-          schema:
-            additionalProperties: true
-            type: object
-        "400":
-          description: Неверный формат входных данных
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Ошибка на сервере
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Обновление второй части профиля пользователя
       tags:
       - Профили
   /teams:

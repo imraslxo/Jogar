@@ -189,66 +189,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/profiles/second/{tg_userid}/profile": {
-            "post": {
-                "description": "Обновляет поля age, pref_position, foot и height в таблице profiles по tg_user_id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Профили"
-                ],
-                "summary": "Обновление второй части профиля пользователя",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Telegram user ID",
-                        "name": "tg_userid",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Данные профиля",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.ProfileCreateSecondDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Профиль успешно обновлён",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "400": {
-                        "description": "Неверный формат входных данных",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка на сервере",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/teams": {
             "get": {
                 "description": "Возвращает массив команд",
@@ -644,7 +584,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "age": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "app_language": {
                     "type": "string"
@@ -668,7 +608,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "playing_frequency": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "pref_position": {
                     "type": "string"
@@ -681,6 +621,9 @@ const docTemplate = `{
         "models.ProfileCreateFirstDTO": {
             "type": "object",
             "properties": {
+                "age": {
+                    "type": "string"
+                },
                 "app_language": {
                     "type": "string"
                 },
@@ -689,6 +632,12 @@ const docTemplate = `{
                 },
                 "country": {
                     "type": "string"
+                },
+                "playing_frequency": {
+                    "type": "string"
+                },
+                "pref_position": {
+                    "type": "string"
                 }
             }
         },
@@ -696,7 +645,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "age": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "city": {
                     "type": "string"
@@ -715,23 +664,6 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "integer"
-                }
-            }
-        },
-        "models.ProfileCreateSecondDTO": {
-            "type": "object",
-            "properties": {
-                "age": {
-                    "type": "integer"
-                },
-                "foot": {
-                    "type": "string"
-                },
-                "height": {
-                    "type": "integer"
-                },
-                "pref_position": {
-                    "type": "string"
                 }
             }
         },
