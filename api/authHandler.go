@@ -146,7 +146,7 @@ func GetAuthUser(c *gin.Context) {
 func IsExist(c *gin.Context) {
 	tguserID := c.Param("tg_userid")
 	var exist bool
-	err := config.DB.QueryRow(c.Request.Context(), "SELECT EXISTS (SELECT 1 FROM \"user\" WHERE tg_userid = $1)", tguserID).Scan(&exist)
+	err := config.DB.QueryRow(c.Request.Context(), "SELECT EXISTS (SELECT 1 FROM profiles WHERE tg_user_id = $1)", tguserID).Scan(&exist)
 	if err != nil {
 		log.Println("Ошибка в запросе проверки ID: ", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Не удалось проверить ID пользователя: "})
