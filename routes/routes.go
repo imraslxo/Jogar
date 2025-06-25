@@ -26,6 +26,7 @@ func Routes() *gin.Engine {
 
 	r.POST("/auth", api.AuthHandler)
 	r.GET("/auth/users", api.GetAuthUser)
+	r.GET("/users/by-tg/:tg_userid/exist", api.IsExist)
 
 	r.GET("/users/team/:team_id", api.GetUsersByTeamID)
 	r.GET("/teams/players/count/:team_name", api.GetNumberOfPlayersInTeam)

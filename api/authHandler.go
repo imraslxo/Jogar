@@ -131,3 +131,29 @@ func GetAuthUser(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusOK, users)
 }
+
+// IsExist godoc
+//
+// @Summary      Проверка существования пользователя
+// @Description  Проверяет, существует ли пользователь с указанным Telegram ID
+// @Tags         Авторизация
+// @Accept       json
+// @Produce      json
+// @Param        tg_userid   path      int     true  "Telegram ID пользователя"
+// @Success      200         {object}  map[string]bool   "Результат проверки наличия пользователя"
+// @Failure      400         {object}  map[string]string "Ошибка запроса или базы данных"
+// @Router       /users/by-tg/{tg_userid}/exist [get]
+func IsExist(c *gin.Context) {
+	tguserID := c.Param("tg_userid")
+	var exist bool
+	err := config.DB.QueryRow(c.Request.Context(), "SELECT EXISTS (SELECT 1 FROM \"user\" WHERE tg_userid = $1)", tguserID).Scan(&exist)
+	if err != nil {
+		log.Println("Ошибка в запросе проверки ID: ", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Не удалось проверить ID пользователя: "})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"exist": exist,
+	})
+}

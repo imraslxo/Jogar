@@ -377,6 +377,50 @@
                 }
             }
         },
+        "/users/by-tg/{tg_userid}/exist": {
+            "get": {
+                "description": "Проверяет, существует ли пользователь с указанным Telegram ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Авторизация"
+                ],
+                "summary": "Проверка существования пользователя",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Telegram ID пользователя",
+                        "name": "tg_userid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Результат проверки наличия пользователя",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка запроса или базы данных",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/users/team/{team_id}": {
             "get": {
                 "description": "Возвращает список пользователей, принадлежащих к команде с указанным ID",

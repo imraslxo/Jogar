@@ -499,6 +499,35 @@ paths:
       summary: Присоединение пользователя к команде
       tags:
       - Пользователь и команды
+  /users/by-tg/{tg_userid}/exist:
+    get:
+      consumes:
+      - application/json
+      description: Проверяет, существует ли пользователь с указанным Telegram ID
+      parameters:
+      - description: Telegram ID пользователя
+        in: path
+        name: tg_userid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Результат проверки наличия пользователя
+          schema:
+            additionalProperties:
+              type: boolean
+            type: object
+        "400":
+          description: Ошибка запроса или базы данных
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Проверка существования пользователя
+      tags:
+      - Авторизация
   /users/team/{team_id}:
     get:
       description: Возвращает список пользователей, принадлежащих к команде с указанным
